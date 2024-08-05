@@ -54,50 +54,50 @@ def AddProduct():
         print(f"Error al agregar el producto: {e}")
 
 def UpdateProduct():
-    print("Modificar producto")
-    id_producto = input("Introduce el ID del producto a modificar: ")
-    title = input("Introduce el nuevo título del producto: ")
-    price = float(input("Introduce el nuevo precio del producto: "))
-    description = input("Introduce la nueva descripción del producto: ")
-    image = input("Introduce la nueva URL de la imagen del producto: ")
-    category = input("Introduce la nueva categoría del producto: ")
-
-    producto_actualizado = {
-        "title": title,
-        "price": price,
-        "description": description,
-        "image": image,
-        "category": category
-    }
-    
     try:
-        url = f'https://fakestoreapi.com/products/{id_producto}'
-        respuesta = requests.put(url, json=producto_actualizado)
-        if respuesta.status_code == 200:
-            print("Producto actualizado")
-            print(json.dumps(respuesta.json(), indent=4, ensure_ascii=False))
-        elif respuesta.status_code == 404:
-            print("No existe el producto con el ID indicado")
+        id = input("Ingresa el ID del producto a modificar: ")
+        url = "https://fakestoreapi.com/products/" + id
+
+        response = requests.get(url)
+        if response.status_code == 404:
+            print("Producto no encontrado. Por favor, verifica el ID e intenta nuevamente.")
+            return  
+        elif response.status_code == 200:
+            product = response.json()
+            if not product:
+                print("Producto no encontrado. Por favor, verifica el ID e intenta nuevamente.")
+                return
+
+        data = {
+            "title": input("Nuevo título: "),
+            "price": float(input("Nuevo precio: ")),
+            "description": input("Nueva descripción: "),
+            "category": input("Nueva categoría: "),
+            "image": "https://fakestoreapi.com/img/placeholder.jpg",
+        }
+        response = requests.put(url, json=data)
+        response.raise_for_status()  
+        respuesta_json = response.json()
+        if respuesta_json is None or "error" in respuesta_json or not respuesta_json:
+            print("El producto no existe o no se encontró.")
         else:
-            print(f"Error al actualizar el producto: {respuesta.status_code} {respuesta.text}")
-    except Exception as e:
-        print(f"Error al actualizar el producto: {e}")
+            print("Producto actualizado correctamente.")
+            print(json.dumps(respuesta_json, indent=4, ensure_ascii=False))
+    except requests.exceptions.RequestException as e:
+        print("no se pudo actualizar, no existe el producto")
+
+
 
 def DeleteProduct():
     print("Eliminación de producto")
     id_producto = input("Introduce el ID del producto a eliminar: ")
     try:
         url = f'https://fakestoreapi.com/products/{id_producto}'
-        respuesta = requests.delete(url)
+        respuesta = requests.get(url)
         if respuesta.status_code == 200:
-            print("Producto eliminado")
-            # La API puede no devolver un contenido JSON en la eliminación, así que puedes omitir json.dumps aquí
-        elif respuesta.status_code == 404:
-            print("No existe el producto con el ID indicado")
-        else:
-            print(f"Error al eliminar el producto: {respuesta.status_code} {respuesta.text}")
+            print(json.dumps(respuesta.json(), indent=4, ensure_ascii=False))
     except Exception as e:
-        print(f"Error al eliminar el producto: {e}")
+        print(f"Producto no encontrado")
 
 def mostrar_menu():
     print("\nAdministración de Productos:")
