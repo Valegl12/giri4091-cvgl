@@ -16,9 +16,9 @@ def GetProduct():
     id_producto = input("Introduce el ID del producto: ")
     try:
         url = f'https://fakestoreapi.com/products/{id_producto}'
-        respuesta = requests.get(url).json()
-        if 'id' in respuesta:
-            print(json.dumps(respuesta, indent=4, ensure_ascii=False))
+        respuesta = requests.get(url)
+        if respuesta.status_code == 200:
+            print(json.dumps(respuesta.json(), indent=4, ensure_ascii=False))
         else:
             print("Producto no encontrado")
     except Exception as e:
@@ -45,7 +45,6 @@ def AddProduct():
     try:
         url = 'https://fakestoreapi.com/products'
         respuesta = requests.post(url, json=nuevo_producto)
-        print(f"Respuesta del servidor: {respuesta.status_code}")
         if respuesta.status_code in [200, 201]:
             print("Producto agregado")
             print(json.dumps(respuesta.json(), indent=4, ensure_ascii=False))
@@ -77,6 +76,8 @@ def UpdateProduct():
         if respuesta.status_code == 200:
             print("Producto actualizado")
             print(json.dumps(respuesta.json(), indent=4, ensure_ascii=False))
+        elif respuesta.status_code == 404:
+            print("No existe el producto con el ID indicado")
         else:
             print(f"Error al actualizar el producto: {respuesta.status_code} {respuesta.text}")
     except Exception as e:
@@ -90,7 +91,9 @@ def DeleteProduct():
         respuesta = requests.delete(url)
         if respuesta.status_code == 200:
             print("Producto eliminado")
-            print(json.dumps(respuesta.json(), indent=4, ensure_ascii=False))
+            # La API puede no devolver un contenido JSON en la eliminación, así que puedes omitir json.dumps aquí
+        elif respuesta.status_code == 404:
+            print("No existe el producto con el ID indicado")
         else:
             print(f"Error al eliminar el producto: {respuesta.status_code} {respuesta.text}")
     except Exception as e:
@@ -124,4 +127,3 @@ while True:
         break
     else:
         print("Opción no válida, por favor intenta de nuevo.")
-
