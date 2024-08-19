@@ -4,7 +4,7 @@ import requests
 URL = "https://fakestoreapi.com/products"
 products = requests.get(URL).json()
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 @app.route('/products', methods=['GET'])
 def get_products():
@@ -54,5 +54,5 @@ def delete_product(product_id):
     products.remove(product)
     return jsonify({"message": "Producto eliminado exitosamente"}), 200
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(port=5001, debug=True)
