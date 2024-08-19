@@ -4,7 +4,7 @@ import requests
 URL = "https://fakestoreapi.com/products"
 products = requests.get(URL).json()
 
-app = Flask(__name__)  # Corregido: __name__ en lugar de _name_
+app = Flask(_name_)
 
 @app.route('/products', methods=['GET'])
 def get_products():
@@ -42,8 +42,8 @@ def update_product(product_id):
     if product is None:
         return jsonify({"error": "Producto no encontrado"}), 404
     data = request.get_json()
-    for key in data:
-        product[key] = data[key]  # Cambiado 'id' por 'key' para actualizar cualquier campo
+    for id in data:
+        product[id] = data[id]
     return jsonify(product)
 
 @app.route('/products/<int:product_id>', methods=['DELETE'])
@@ -54,5 +54,5 @@ def delete_product(product_id):
     products.remove(product)
     return jsonify({"message": "Producto eliminado exitosamente"}), 200
 
-if __name__ == '__main__':  # Corregido: __main__ en lugar de _main_
+if _name_ == '_main_':
     app.run(port=5001, debug=True)
